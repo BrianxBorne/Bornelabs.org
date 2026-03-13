@@ -35,13 +35,19 @@
                             </a>
                         </li>
                         <li class="nav-item p-1">
-                            <a href="#About" class="nav-link rounded fw-bold" data-page="About">
-                                <i class="bi bi-person me-2"></i> About
+                            <a href="#Services" class="nav-link rounded fw-bold" data-page="Services">
+                                <i class="bi bi-gear me-2"></i> Services
+                            </a>
+                        </li>
+
+                        <li class="nav-item p-1">
+                            <a href="#Contact" class="nav-link rounded fw-bold" data-page="Contact">
+                                <i class="bi bi-telephone me-2"></i> Contact
                             </a>
                         </li>
                         <li class="nav-item p-1">
-                            <a href="#Contact" class="nav-link rounded fw-bold" data-page="Contact">
-                                <i class="bi bi-envelope me-2"></i> Contact
+                            <a href="#About" class="nav-link rounded fw-bold" data-page="About">
+                                <i class="bi bi-info-circle me-2"></i> About
                             </a>
                         </li>
                         <li class="nav-item p-1">
@@ -72,10 +78,13 @@
                                     <a href="#Projects" class="nav-link rounded fw-bold" data-page="Projects">Projects</a>
                                 </li>
                                 <li class="nav-item p-1">
-                                    <a href="#About" class="nav-link rounded fw-bold" data-page="About">About</a>
+                                <a href="#Services" class="nav-link rounded fw-bold" data-page="Services">Services</a> 
                                 </li>
                                 <li class="nav-item p-1">
                                     <a href="#Contact" class="nav-link rounded fw-bold" data-page="Contact">Contact</a>
+                                </li>
+                                <li class="nav-item p-1">
+                                    <a href="#About" class="nav-link rounded fw-bold" data-page="About">About</a>
                                 </li>
                                 <li class="nav-item p-1">
                                     <a href="#More" class="nav-link rounded fw-bold" data-page="More">More</a>
@@ -86,7 +95,11 @@
                 </div>
 
                 <div class="main flex-grow-1 mb-5">
-                    <div id="content" data-include="Pages/home.html">Loading...</div>
+                    <div id="content" data-include="Pages/home.html">
+                        <div class="spinner-grow text-dark" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

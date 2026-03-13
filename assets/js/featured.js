@@ -25,70 +25,30 @@ async function loadFeaturedProjects() {
     const wing = project.wing ? project.wing.replace(/^"+|"+$/g, '') : '';
 
     const card = document.createElement("div");
-    card.className = "project-card";
+    card.className = "card project-card";
 
     card.innerHTML = `
-      <img class="project-image" src="${imageURL}">
-      <div class="project-info">
-        <h2>
-          ${logoURL ? `<img class="project-logo" src="${logoURL}">` : ''}
+
+      <div style="display:flex; align-items:center; justify-content:center; background:white; color:#1f1f1f; padding:6px 10px; border-bottom:1px solid #1f1f1f;font-weight:600; font-size:0.875rem; gap:6px;">
+        <img src="assets/media/${wing}.jpg" alt="${wing} logo" style="width:20px; height:20px; object-fit:contain;">
+        <span>${wing}</span>
+      </div>
+
+       <img class="project-image" src="${imageURL}">
+
+      <div class="card-body">
+
+        <h5 class="fw-semibold mb-2">
+          ${logoURL ? `<img class="project-logo me-2" src="${logoURL}">` : ''}
           ${name}
-        </h2>
-        <p>${description}</p>
-        <small>${wing}</small>
+        </h5>
+
+        <p class="mb-2">${description}</p>
       </div>
     `;
 
     container.appendChild(card);
-
-    getDarkestColor(logoURL).then(color => {
-      card.style.background = color;
-      const rgb = color.match(/\d+/g);
-      const brightness = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]);
-      card.querySelector(".project-info").style.color = brightness > 186 ? "black" : "white";
-    });
   }
-}
-
-function getDarkestColor(logoUrl) {
-  return new Promise(resolve => {
-    const img = new Image();
-    img.crossOrigin = "Anonymous";
-    img.src =logoUrl;
-
-    img.onload = function() {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      const size = 40;
-      canvas.width = size;
-      canvas.height = size;
-
-      ctx.drawImage(img, 0, 0, size, size);
-      const data = ctx.getImageData(0, 0, size, size).data;
-
-      let darkestColor = null;
-      let minBrightness = 255; 
-
-      for (let i = 0; i < data.length; i += 4) {
-        const r = data[i];
-        const g = data[i + 1];
-        const b = data[i + 2];
-        
-        const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
-
-        if (brightness < minBrightness) {
-          minBrightness = brightness;
-          darkestColor = `rgb(${r},${g},${b})`;
-        }
-      }
-
-      resolve(darkestColor || "black");
-    };
-
-    img.onerror = function() {
-      resolve("black");
-    };
-  });
 }
 
 loadFeaturedProjects();
