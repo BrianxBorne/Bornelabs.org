@@ -1,72 +1,109 @@
 (function () {
-'use strict';
+  'use strict';
 
-const content = document.getElementById('content');
+  const content = document.getElementById('content');
+  const main = document.querySelector('.main');
 
-async function loadPage(page) {
-
+  async function loadPage(page) {
     if (!content) return;
 
     const file = `Pages/${page.toLowerCase()}.html`;
 
     try {
+      const res = await fetch(`${file}?v=${Date.now()}`, { cache: "no-store" });
+      if (!res.ok) throw new Error(res.status);
 
-        const res = await fetch(`${file}?v=${Date.now()}`, { cache: "no-store" });
+      content.innerHTML = await res.text();
 
-        if (!res.ok) throw new Error(res.status);
+      // Call any page-specific functions
+      if (typeof loadFeaturedProjects === "function") loadFeaturedProjects();
 
-        content.innerHTML = await res.text();
-
-        if (typeof loadFeaturedProjects === "function") loadFeaturedProjects();
+      // Reset main scroll to top
+      if (main) main.scrollTo({ top: 0, behavior: "auto" });
 
     } catch (err) {
-
-        content.innerHTML =
-        `<div class="p-3 text-danger">Could not load "${file}"</div>`;
-
-        console.error(err);
+      content.innerHTML = `<div class="p-3 text-danger">Could not load "${file}"</div>`;
+      console.error(err);
     }
-}
+  }
 
-function router() {
-    loadPage(location.hash.replace("#","") || "Home");
-}
+  function scrollToSection(id) {
+    if (!main) return;
 
-function initNavigation() {
+    const section = document.getElementById(id);
+    if (!section) return;
 
+    const offset = 70; // optional offset for headers
+    const y = section.offsetTop - offset;
+
+    main.scrollTo({
+      top: y,
+      behavior: "smooth"
+    });
+  }
+
+  function router() {
+    const hash = location.hash.replace("#", "");
+
+    if (!hash) {
+      loadPage("Home");
+      return;
+    }
+
+    const [page, sectionId] = hash.split(":"); // handle #page:section
+
+    loadPage(page).then(() => {
+      if (sectionId) scrollToSection(sectionId);
+    });
+  }
+
+  function initNavigation() {
     document.addEventListener("click", e => {
 
-        const link = e.target.closest("[data-page]");
-        if (!link) return;
-
+      // Handle elements with data-page (including small cards)
+      const pageLink = e.target.closest("[data-page]");
+      if (pageLink) {
         e.preventDefault();
 
-        const page = link.dataset.page;
+        const page = pageLink.dataset.page;
+        const section = pageLink.dataset.section; // optional target section
 
-        location.hash = page;
+        location.hash = page + (section ? ":" + section : "");
 
-        document.querySelectorAll("[data-page]")
-            .forEach(el => el.classList.remove("active"));
+        document.querySelectorAll("[data-page]").forEach(el => el.classList.remove("active"));
+        pageLink.classList.add("active");
 
-        link.classList.add("active");
-
+        // Close mobile menu if open
         const menu = document.getElementById("mobileMenu");
-
         if (menu?.classList.contains("show")) {
-            bootstrap.Collapse.getInstance(menu)?.hide();
+          bootstrap.Collapse.getInstance(menu)?.hide();
         }
 
+        return;
+      }
+
+      // Handle standard anchor links with hashes
+      const tagLink = e.target.closest('a[href^="#"]');
+      if (tagLink) {
+        const id = tagLink.getAttribute("href").replace("#", "");
+        const section = document.getElementById(id);
+
+        if (section) {
+          e.preventDefault();
+          scrollToSection(id);
+
+          document.querySelectorAll(".tag-link").forEach(el => el.classList.remove("active"));
+          tagLink.classList.add("active");
+        }
+      }
     });
+  }
 
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-
+  document.addEventListener("DOMContentLoaded", () => {
     initNavigation();
     router();
 
     window.addEventListener("hashchange", router);
-
-});
+  });
 
 })();
